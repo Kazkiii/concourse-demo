@@ -1,7 +1,6 @@
 - web view: [http://localhost:8080](http://localhost:8080)
 - preparation
   - curl -O https://concourse-ci.org/docker-compose.yml
-  - sudo sh ./keys/generate
   - docker-compose up -d
   - curl 'http://localhost:8080/api/v1/cli?arch=amd64&platform=linux' -o fly
   - chmod +x ./fly && sudo mv ./fly /usr/local/bin/
