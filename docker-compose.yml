@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_USER: concourse
+      POSTGRES_PASSWORD: password
+      PGDATA: /database
+  web:
+    image: concourse/concourse
+    links: [db]
+    depends_on: [db]
+    command: web
+    privileged: true
+    restart: unless-stopped
+    ports: ["8888:8888", "2222:2222"]
+    volumes: ["./keys/web:/concourse-keys"]
+    environment:
+      CONCOURSE_EXTERNAL_URL: http://localhost:8888
+      CONCOURSE_POSTGRES_HOST: db
+      CONCOURSE_POSTGRES_USER: concourse
+      CONCOURSE_POSTGRES_DATABASE: concourse
+      CONCOURSE_POSTGRES_PASSWORD: password
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+  worker:
+    image: concourse/concourse
+    privileged: true
+    links: [web]
+    depends_on: [web]
+    command: worker
+    volumes: ["./keys/worker:/concourse-keys"]
+    environment:
+      CONCOURSE_TSA_HOST: web:2222
